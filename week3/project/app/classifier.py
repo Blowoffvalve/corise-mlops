@@ -28,7 +28,7 @@ class TransformerFeaturizer(BaseEstimator, TransformerMixin):
 class NewsCategoryClassifier:
     def __init__(self, verbose: bool = False) -> None:
         self.verbose = verbose
-        self.pipeline = None
+        self.pipeline: Pipeline = None
         self.classes = None
 
     def _initialize_pipeline(self) -> Pipeline:
@@ -72,7 +72,11 @@ class NewsCategoryClassifier:
             ...
         }
         """
-        return {}
+        scores={}
+        for label,score in zip(self.pipeline.classes_,self.pipeline.predict_proba(model_input['description'])[0]):
+            scores[label]=score
+        return scores
+
 
     def predict_label(self, model_input: dict) -> str:
         """
@@ -83,4 +87,4 @@ class NewsCategoryClassifier:
 
         Output format: predicted label for the model input
         """
-        return ""
+        return self.pipeline.predict([model_input['description']])[0]
